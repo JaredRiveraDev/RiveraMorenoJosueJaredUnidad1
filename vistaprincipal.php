@@ -1,3 +1,25 @@
+<?php
+//valida que el usuario presiono el reCAPTCHA
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $ip = $_SERVER["REMOTE_ADDR"];
+  $captcha = $_POST['g-recaptcha-response'];
+  $secretKey = '6LdaODQmAAAAANwgfEpuL2XmO4PjYsI_mvm9kirg';
+
+  $errors = array();
+
+  $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret={$secretKey}&response={$captcha}&remoteip={$ip}");
+
+  $atributos = json_decode($response, TRUE);
+
+  if (!$atributos['success']) {
+    $errors[] = 'Verifica el captcha';
+  } else {
+    header("Location: peli.php");
+    exit();
+  }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,7 +31,36 @@
     <link rel="stylesheet" href="css/ofertas.css">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <style>
+    .modal-dialog {
+      max-width: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 0;
+    }
 
+    .modal-content {
+      background-color: transparent;
+      border: none;
+      box-shadow: none;
+    }
+
+    .modal-header {
+      border-bottom: none;
+    }
+  </style>
+    <script>
+    function onSubmit(token) {
+      document.getElementById("ver").submit();
+    }
+
+    function submitForm() {
+      document.querySelector('form').submit();
+    }
+  </script>
 </head>
 <body>
   
@@ -54,6 +105,36 @@
 </section>
 <br><br><br><br><br><br><br><br><br>
 
+<!-- Messenger Plugin de chat Code -->
+<div id="fb-root"></div>
+
+<!-- Your Plugin de chat code -->
+<div id="fb-customer-chat" class="fb-customerchat">
+</div>
+
+<script>
+  var chatbox = document.getElementById('fb-customer-chat');
+  chatbox.setAttribute("page_id", "105574405890239");
+  chatbox.setAttribute("attribution", "biz_inbox");
+</script>
+
+<!-- Your SDK code -->
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      xfbml            : true,
+      version          : 'v17.0'
+    });
+  };
+
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = 'https://connect.facebook.net/es_LA/sdk/xfbml.customerchat.js';
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+</script>
 
 
 
@@ -64,7 +145,8 @@
     <div class="info">
       <h1>AKA</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
+     
     </div>
   </div>
 </div>
@@ -75,7 +157,7 @@
     <div class="info">
       <h1>Escuadron 6</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -86,7 +168,7 @@
     <div class="info">
       <h1>El Sobreviviente</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -97,7 +179,7 @@
     <div class="info">
       <h1>John Wick</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -110,7 +192,7 @@
     <div class="info">
       <h1>Indiana Jones</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -121,7 +203,7 @@
     <div class="info">
       <h1>Flynn</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -132,7 +214,7 @@
     <div class="info">
       <h1>La Momia</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -143,7 +225,7 @@
     <div class="info">
       <h1>Piratas del Caribe</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -156,7 +238,7 @@
     <div class="info">
       <h1>1917</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -167,7 +249,7 @@
     <div class="info">
       <h1>Salvar al soldado Ryan</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -178,7 +260,7 @@
     <div class="info">
       <h1>Sin Novedad En El Frente</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -189,7 +271,7 @@
     <div class="info">
       <h1>Hasta el ultimo Hombre</h1>
       <p> </p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -202,7 +284,7 @@
     <div class="info">
       <h1>Guardianes de la Galaxia</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -213,7 +295,7 @@
     <div class="info">
       <h1>Interstellar</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -224,7 +306,7 @@
     <div class="info">
       <h1>Hombres de Negro</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -235,7 +317,7 @@
     <div class="info">
       <h1>Tron</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -248,7 +330,7 @@
     <div class="info">
       <h1>Chiquito pero Peligroso</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -259,7 +341,7 @@
     <div class="info">
       <h1>No se aceptan devoluciones</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -270,7 +352,7 @@
     <div class="info">
       <h1>¿Que paso Ayer?</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -281,7 +363,7 @@
     <div class="info">
       <h1>Scary Movie</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -294,7 +376,7 @@
     <div class="info">
       <h1>Cambio de Reinas</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -305,7 +387,7 @@
     <div class="info">
       <h1>Chernobyl</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -316,7 +398,7 @@
     <div class="info">
       <h1>The King</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -327,7 +409,7 @@
     <div class="info">
       <h1>El Padrino</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -340,7 +422,7 @@
     <div class="info">
       <h1>El Conjuro</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -351,7 +433,7 @@
     <div class="info">
       <h1>La Noche Del Demonio</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -362,7 +444,7 @@
     <div class="info">
       <h1>IT</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
@@ -373,12 +455,34 @@
     <div class="info">
       <h1>Smile</h1>
       <p></p>
-      <a href="#" class="btn">Comprar</a>
+      <button class="btn" data-toggle="modal" data-target="#myModal">Comprar</button>
     </div>
   </div>
 </div>
 <br><br><br>
+<!-- modal -->
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+        </div>
+        <!-- reCAPTCHA -->
+        <form id="ver" action="" method="post">
+          <div class="modal-body" style="text aling-center">
+            <div class="mb-3">
+              <div class="g-recaptcha" data-sitekey="6LdaODQmAAAAAERG16xF_IbvqQT2tztjuIa4wTlb"
+                data-callback="submitForm"></div>
+            </div>
+          </div>
 
+        </form>
+      </div>
+    </div>
+  </div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
 
