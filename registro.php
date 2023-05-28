@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Iniciar sesión</title>
+    <title>Registro</title>
     <style>
         body {
             background-color: #000;
@@ -55,39 +55,47 @@
 
 <body>
     <center>
-        <h2>Iniciar sesión</h2>
+        <h2>Registro</h2>
     </center>
-    <br>
-    <form action="login.php" method="post">
+    <form action="registro.php" method="post">
+        Nombre: <input type="text" name="nombre" required><br>
         Email: <input type="email" name="email" required><br>
         Contraseña: <input type="password" name="password" required><br>
-        <input type="submit" value="Iniciar sesión">
+        Pregunta de seguridad: <input type="text" name="pregunta" required><br>
+        Respuesta de seguridad: <input type="text" name="respuesta" required><br>
+        <input type="submit" value="Registrarse">
     </form>
     <center>
-        <p><a href="registro.php">Registrarse</a></p>
-        <p><a href="cambiar_contraseña.php">¿Olvidaste tu contraseña?</a></p>
+        <p><a href="login.php">Iniciar Sesión</a></p>
     </center>
 
     <?php
-    session_start();
+    // Conexión a la base de datos
+    $con = mysqli_connect("localhost", "root", "", "pelisdb");
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $nombre = $_POST["nombre"];
         $email = $_POST["email"];
         $password = $_POST["password"];
+        $pregunta = $_POST["pregunta"];
+        $respuesta = $_POST["respuesta"];
 
-        // Conexión a la base de datos
-        $con = mysqli_connect("localhost", "root", "", "pelisdb");
-
-        // Verificar las credenciales del usuario
-        $query = "SELECT * FROM usuarios WHERE email='$email' AND password='$password'";
+        // Verificar si el usuario ya existe en la base de datos
+        $query = "SELECT * FROM usuarios WHERE email='$email'";
         $result = mysqli_query($con, $query);
 
-        if (mysqli_num_rows($result) == 1) {
-            // Inicio de sesión exitoso, guardar la información en la sesión
-            $_SESSION["email"] = $email;
-            header("Location: vistaprincipal.php");
+        if (mysqli_num_rows($result) > 0) {
+            echo "El email ya está registrado.";
         } else {
-            echo "Credenciales inválidas.";
+            // Insertar el nuevo usuario en la base de datos
+            $query = "INSERT INTO usuarios (nombre, email, password, pregunta_seguridad, respuesta_seguridad) 
+                      VALUES ('$nombre', '$email', '$password', '$pregunta', '$respuesta')";
+
+            if (mysqli_query($con, $query)) {
+                echo "Registro exitoso. <a href='login.php'>Iniciar sesión</a>";
+            } else {
+                echo "Error en el registro: " . mysqli_error($con);
+            }
         }
 
         mysqli_close($con);

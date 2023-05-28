@@ -2,7 +2,8 @@
 <html>
 
 <head>
-    <title>Iniciar sesión</title>
+    <title>Cambiar contraseña</title>
+    <br>
     <style>
         body {
             background-color: #000;
@@ -22,6 +23,7 @@
         }
 
         input[type="email"],
+        input[type="text"],
         input[type="password"] {
             padding: 8px;
             border: none;
@@ -46,48 +48,49 @@
         a:hover {
             text-decoration: underline;
         }
-
-        p {
-            margin-top: 20px;
-        }
     </style>
+
 </head>
 
 <body>
     <center>
-        <h2>Iniciar sesión</h2>
+        <h2>Cambiar contraseña</h2>
     </center>
-    <br>
-    <form action="login.php" method="post">
+    <form action="cambiar_contraseña.php" method="post">
         Email: <input type="email" name="email" required><br>
-        Contraseña: <input type="password" name="password" required><br>
-        <input type="submit" value="Iniciar sesión">
+        Nombre de usuario: <input type="text" name="username" required><br>
+        Respuesta de seguridad: <input type="text" name="pregunta" required><br>
+        Nueva contraseña: <input type="password" name="nueva_contraseña" required><br>
+        <input type="submit" value="Cambiar contraseña">
     </form>
     <center>
-        <p><a href="registro.php">Registrarse</a></p>
-        <p><a href="cambiar_contraseña.php">¿Olvidaste tu contraseña?</a></p>
+        <p><a href="login.php">Iniciar Sesión</a></p>
     </center>
 
     <?php
-    session_start();
-
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $email = $_POST["email"];
-        $password = $_POST["password"];
+        $username = $_POST["username"];
+        $pregunta = $_POST["pregunta"];
+        $nuevaContraseña = $_POST["nueva_contraseña"];
 
         // Conexión a la base de datos
         $con = mysqli_connect("localhost", "root", "", "pelisdb");
 
-        // Verificar las credenciales del usuario
-        $query = "SELECT * FROM usuarios WHERE email='$email' AND password='$password'";
+        // Verificar si el usuario y la pregunta de seguridad coinciden
+        $query = "SELECT * FROM usuarios WHERE email='$email' AND nombre='$username' AND respuesta_seguridad='$pregunta'";
         $result = mysqli_query($con, $query);
 
         if (mysqli_num_rows($result) == 1) {
-            // Inicio de sesión exitoso, guardar la información en la sesión
-            $_SESSION["email"] = $email;
-            header("Location: vistaprincipal.php");
+            // Actualizar la contraseña
+            $query = "UPDATE usuarios SET password='$nuevaContraseña' WHERE email='$email'";
+            if (mysqli_query($con, $query)) {
+                echo "Contraseña actualizada correctamente.";
+            } else {
+                echo "Error al actualizar la contraseña: " . mysqli_error($con);
+            }
         } else {
-            echo "Credenciales inválidas.";
+            echo "Usuario o pregunta de seguridad incorrectos.";
         }
 
         mysqli_close($con);
